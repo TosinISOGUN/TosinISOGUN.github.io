@@ -1,73 +1,83 @@
-# Welcome to your Lovable project
+# B-PLAN Consulting — Website
 
-## Project info
+This repository contains the source and built site for the B-PLAN Consulting marketing website deployed to GitHub Pages at https://tosinisogun.github.io/.
 
-**URL**: https://lovable.dev/projects/988086e9-9c2d-4cd7-91d0-b0203f33f0dc
+**What this site is**
+- A Vite + React + TypeScript single-page marketing site (hero, services, insights, about, contact).
+- Content is authored in the repository (see `src/lib/content.ts`) and rendered by pages under `src/pages`.
 
-## How can I edit this code?
+**Tech stack**
+- Vite (build system) with React + TypeScript
+- Tailwind CSS for styling
+- shadcn UI components (Radix + Tailwind composition)
+- React Router for client routing (`src/App.tsx` uses `HashRouter` to be Pages-friendly)
 
-There are several ways of editing your application.
+Project structure (important files)
+- `index.html` — main HTML template served by GitHub Pages (also copied from `dist/index.html` on build).
+- `src/` — application source
+  - `src/pages/` — page components (Index, Services, Insights, About, Contact, InsightDetail)
+  - `src/components/` — shared UI components and `ui/` primitives
+  - `src/lib/content.ts` — central content/data used by pages
+- `dist/` — Vite-built static output (generated via `npm run build`)
+- `.github/workflows/gh-pages.yml` — workflow that can push `dist` (or `docs/`) to `main` for Pages
+- `.github/workflows/generate-favicons.yml` — CI job to rasterize `favicon.svg` into PNGs and commit them
 
-**Use Lovable.**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/988086e9-9c2d-4cd7-91d0-b0203f33f0dc) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+Local development
+1. Install dependencies:
+```bash
+npm ci
+```
+2. Start dev server:
+```bash
 npm run dev
 ```
+3. Open http://localhost:5173 (Vite will print the exact URL).
 
-**Edit a file directly in GitHub**
+Build & preview
+```bash
+npm run build
+npm run preview
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Favicon and cross-browser support
+- The repository supplies `favicon.svg` at the repo root. Some browsers prefer PNG fallbacks.
+- The site includes fallback links in `index.html` (`favicon-32x32.png`, `favicon-16x16.png`, `apple-touch-icon.png`) — add those files to the repo root to ensure broad support.
+- A GitHub Actions workflow (`.github/workflows/generate-favicons.yml`) will (when enabled) auto-generate these PNGs from `favicon.svg` and commit them back to `main`.
 
-**Use GitHub Codespaces**
+Routing and GitHub Pages
+- For `USERNAME.github.io` sites the `vite.config.ts` `base` should be set to `/` (this repo uses `/`).
+- To avoid refresh 404s, the project uses `HashRouter` in `src/App.tsx`. If you prefer clean paths, switch to `BrowserRouter` and configure a Pages deployment that serves an index fallback (more complex).
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Deployment options
+- Option A — Commit built files to repository root (this repo currently has built assets committed to `main`):
+  - `npm run build` then copy `dist/*` to repo root and push.
+- Option B — Use `docs/` folder: build into `dist/`, copy `dist/*` to `docs/`, and commit `docs/` to `main`. GitHub Pages can serve from the `docs/` folder.
+- Option C — Use the `gh-pages` branch with a standard `gh-pages` deployment action.
 
-## What technologies are used for this project?
+CI / Actions notes
+- `.github/workflows/gh-pages.yml` contains a workflow that builds and commits `docs/` to `main`. It requires `permissions: contents: write` for `GITHUB_TOKEN` to push.
+- `.github/workflows/generate-favicons.yml` generates PNG icons from `favicon.svg` using ImageMagick and commits them. The workflow is cautious to avoid re-trigger loops by skipping bot-triggered runs.
 
-This project is built with:
+How to edit content
+- Update `src/lib/content.ts` for site text, insight posts, services, and team data. Pages read from that module.
+- For layout and UI changes, edit components in `src/components/` and the `ui/` primitives under `src/components/ui/`.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Contributing
+- Make feature branches from `main`, open pull requests and have them reviewed.
+- For content-only changes you may edit `src/lib/content.ts` and open a PR.
 
-## How can I deploy this project?
+Troubleshooting
+- If the Pages site shows stale assets, clear browser cache or hard-refresh (Ctrl+F5 / Cmd+Shift+R) — GitHub Pages can cache aggressively.
+- If Actions fail with `permission denied` when attempting to push, ensure the workflow contains:
+```yaml
+permissions:
+  contents: write
+```
+and that the job is not blocked by branch protection rules that prevent `GITHUB_TOKEN` from pushing.
 
-Simply open [Lovable](https://lovable.dev/projects/988086e9-9c2d-4cd7-91d0-b0203f33f0dc) and click on Share -> Publish.
+Contact / Ownership
+- Repo owner: TosinISOGUN (GitHub Pages host: tosinisogun.github.io)
 
-## Can I connect a custom domain to my Lovable project?
+---
+Generated documentation added by maintainers to help with development and deployment.
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)

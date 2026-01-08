@@ -1,0 +1,45 @@
+name: Generate and commit favicons
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  generate-favicons:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install ImageMagick
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+
+      - name: Generate PNG favicons
+        run: |
+          if [ -f favicon.svg ]; then
+            convert favicon.svg -background none -resize 32x32 favicon-32x32.png
+            convert favicon.svg -background none -resize 16x16 favicon-16x16.png
+            convert favicon.svg -background none -resize 180x180 apple-touch-icon.png
+          else
+            echo "favicon.svg not found, skipping."
+            exit 0
+          fi
+
+      - name: Commit and push icons
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add favicon-32x32.png favicon-16x16.png apple-touch-icon.png || true
+          git commit -m "chore: generate favicon PNGs" || echo "No changes to commit"
+          git push origin main
