@@ -8,8 +8,8 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  // Use relative base so built assets work when served from GitHub Pages
-  base: './',
+  // For a user/organization site (USERNAME.github.io) use absolute root base
+  base: '/',
   plugins: [react()].filter(Boolean),
   resolve: {
     alias: {
